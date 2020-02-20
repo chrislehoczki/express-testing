@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --exec npm run restart"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "^8.2.1",
+    "babel-eslint": "^10.0.3",
     "babel-jest": "^23.4.2",
     "eslint": "^4.15.0",
     "eslint-config-prettier": "^2.9.0",
