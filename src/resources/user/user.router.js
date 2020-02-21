@@ -1,5 +1,5 @@
 import express from "express"
-import { getUsers, addUser, updateUser } from "./user.controller.js"
+import { getUsers, addUser, updateUser, deleteUser } from "./user.controller.js"
 const userRouter = express.Router()
 
 userRouter
@@ -11,6 +11,10 @@ userRouter
   })
   .put((req, res) => {
     updateUser(req.body)
+    res.status(200).send({ status: "OK" })
+  })
+  .delete((req, res) => {
+    deleteUser(req.body)
     res.status(200).send({ status: "OK" })
   })
 

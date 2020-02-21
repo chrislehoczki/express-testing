@@ -30,7 +30,7 @@ describe("userRouter", () => {
   beforeEach(() => {
     loadUsers(mockUsers)
   })
-  /* eslint-disable */
+
   it("GET /user returns current users", done => {
     request(app)
       .get("/user")
@@ -70,6 +70,21 @@ describe("userRouter", () => {
         expect(res.body).toEqual({ status: "OK" })
         expect(getUsers()).toHaveLength(2)
         expect(getUsers()[1].name).toEqual("Paul")
+        done()
+      })
+  })
+
+  it("DELETE /user deletes a user from the database", done => {
+    request(app)
+      .delete("/user")
+      .send({ id: 0 })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end(function(err, res) {
+        if (err) throw err
+        expect(res.body).toEqual({ status: "OK" })
+        expect(getUsers()).toHaveLength(1)
+        expect(getUsers()[0].name).toEqual("John")
         done()
       })
   })
