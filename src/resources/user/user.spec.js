@@ -9,6 +9,7 @@ describe("userRouter", () => {
       .expect(200)
       .end(function(err, res) {
         if (err) throw err
+        expect(res.body.id).toBeDefined()
       })
   })
 })
