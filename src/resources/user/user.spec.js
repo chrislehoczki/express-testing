@@ -8,17 +8,18 @@ const mockUsers = [
   { id: 1, name: "John" }
 ]
 const newUser = { id: 2, name: "Judit" }
+const updateUser = { id: 1, name: "Paul" }
 
 describe("userController", () => {
   beforeEach(() => {
     loadUsers(mockUsers)
   })
   it("getUser returns current users", () => {
-    expect(getUsers().length).toEqual(2)
+    expect(getUsers()).toHaveLength(2)
   })
   it("addUser adds user to the db", () => {
     addUser(newUser)
-    expect(getUsers().length).toEqual(3)
+    expect(getUsers()).toHaveLength(3)
   })
   afterEach(() => {
     resetUsers()
@@ -29,17 +30,20 @@ describe("userRouter", () => {
   beforeEach(() => {
     loadUsers(mockUsers)
   })
+
   it("GET /user returns current users", done => {
     request(app)
       .get("/user")
       .expect("Content-Type", /json/)
       .expect(200)
       .end(function(err, res) {
+        console.log(res.body)
         if (err) throw err
-        expect(res.body.length).toEqual(2)
+        expect(res.body).toHaveLength(2)
         done()
       })
   })
+
   it("POST /user adds a user to the database", done => {
     request(app)
       .post("/user")
@@ -49,11 +53,42 @@ describe("userRouter", () => {
       .end(function(err, res) {
         if (err) throw err
         expect(res.body).toEqual({ status: "OK" })
-        expect(getUsers().length).toEqual(3)
+        expect(getUsers()).toHaveLength(3)
         expect(getUsers()[2].name).toEqual("Judit")
         done()
       })
   })
+
+  it("PUT /user updates a user in the database", done => {
+    request(app)
+      .put("/user")
+      .send(updateUser)
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end(function(err, res) {
+        if (err) throw err
+        expect(res.body).toEqual({ status: "OK" })
+        expect(getUsers()).toHaveLength(2)
+        expect(getUsers()[1].name).toEqual("Paul")
+        done()
+      })
+  })
+
+  it("DELETE /user deletes a user from the database", done => {
+    request(app)
+      .delete("/user")
+      .send({ id: 0 })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end(function(err, res) {
+        if (err) throw err
+        expect(res.body).toEqual({ status: "OK" })
+        expect(getUsers()).toHaveLength(1)
+        expect(getUsers()[0].name).toEqual("John")
+        done()
+      })
+  })
+
   afterEach(() => {
     resetUsers()
   })

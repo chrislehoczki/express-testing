@@ -1,5 +1,5 @@
 import express from "express"
-import { getUsers, addUser } from "./user.controller.js"
+import { getUsers, addUser, updateUser, deleteUser } from "./user.controller.js"
 const userRouter = express.Router()
 
 userRouter
@@ -7,6 +7,14 @@ userRouter
   .get((req, res) => res.status(200).json(getUsers()))
   .post((req, res) => {
     addUser(req.body)
+    res.status(200).send({ status: "OK" })
+  })
+  .put((req, res) => {
+    updateUser(req.body)
+    res.status(200).send({ status: "OK" })
+  })
+  .delete((req, res) => {
+    deleteUser(req.body)
     res.status(200).send({ status: "OK" })
   })
 
