@@ -12,6 +12,7 @@ app.use(json())
 app.use(urlencoded({ extended: true }))
 app.use(morgan("dev"))
 
+app.get("/", (req, res) => res.send("Jenkins Deployment Complete"))
 app.use("/user", userRouter)
 
 export const start = () => {

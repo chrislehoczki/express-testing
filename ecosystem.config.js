@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "express-testing",
       script: "npm",
-      args: "start"
+      args: "restart"
     }
   ]
 }
