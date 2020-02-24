@@ -10,7 +10,7 @@ import {
 
 const mockUsers = [{ username: "Chris" }, { username: "John" }]
 
-describe.only("auth", () => {
+describe("auth", () => {
   beforeEach(() => {
     loadUsers(mockUsers)
   })
@@ -35,19 +35,10 @@ describe.only("auth", () => {
   })
   describe("signup", () => {
     it("requires email and password", async () => {
-      expect.assertions(2)
       const req = { body: {} }
-      const res = {
-        status(status) {
-          expect(status).toBe(400)
-          return this
-        },
-        send(result) {
-          expect(typeof result.Error).toBe("string")
-        }
-      }
-
-      await signup(req, res)
+      const next = jest.fn()
+      await signup(req, {}, next)
+      expect(next).toHaveBeenCalled()
     })
 
     it("creates user and and sends new token", async () => {
@@ -70,63 +61,38 @@ describe.only("auth", () => {
   })
   describe("signin", () => {
     beforeEach(async () => {
-      const req1 = { body: { username: "James", password: "293jssh" } }
-      const res1 = {
+      const req = { body: { username: "James", password: "293jssh" } }
+      const res = {
         status(status) {
           return this
         },
         async send(result) {}
       }
-      await signup(req1, res1)
+      await signup(req, res)
     })
     it("requires email and password", async () => {
-      expect.assertions(2)
       const req = { body: {} }
-      const res = {
-        status(status) {
-          expect(status).toBe(400)
-          return this
-        },
-        send(result) {
-          expect(typeof result.Error).toBe("string")
-        }
-      }
-
-      await signin(req, res)
+      const res = {}
+      const next = jest.fn()
+      await signin(req, res, next)
+      expect(next).toHaveBeenCalled()
     })
 
     it("sends error if no user found", async () => {
-      expect.assertions(2)
       const req = { body: { username: "nouser", password: "293jssh" } }
-      const res = {
-        status(status) {
-          expect(status).toBe(404)
-          return this
-        },
-        async send(result) {
-          expect(typeof result.Error).toBe("string")
-        }
-      }
-
-      await signin(req, res)
+      const res = {}
+      const next = jest.fn()
+      await signin(req, res, next)
+      expect(next).toHaveBeenCalled()
     })
     it("sends error if no password match", async () => {
-      expect.assertions(2)
       const req = { body: { username: "James", password: "wrong password" } }
-      const res = {
-        status(status) {
-          expect(status).toBe(401)
-          return this
-        },
-        async send(result) {
-          expect(typeof result.Error).toBe("string")
-        }
-      }
-
-      await signin(req, res)
+      const res = {}
+      const next = jest.fn()
+      await signin(req, res, next)
+      expect(next).toHaveBeenCalled()
     })
     it("returns token if password matches", async () => {
-      expect.assertions(2)
       const req = { body: { username: "James", password: "293jssh" } }
       const res = {
         status(status) {

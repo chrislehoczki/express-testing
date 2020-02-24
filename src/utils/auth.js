@@ -24,12 +24,10 @@ export const verifyToken = token => {
   })
 }
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   const { username, password } = req.body
   if (!username || !password) {
-    return res
-      .status(400)
-      .send({ Error: "Username and password must be provided" })
+    next("Username and password must be provided")
   }
   try {
     const hash = await bcrypt.hash(password, 8)
@@ -41,32 +39,28 @@ export const signup = async (req, res) => {
     const token = newToken(addedUser)
     res.status(201).send({ token })
   } catch (e) {
-    console.log(`<<<<<<<<<<<<< Error: ${e}`)
-    res.status(400).send({ Error: "Error creating user" })
+    next("Error creating user")
   }
 }
 
-export const signin = async (req, res) => {
+export const signin = async (req, res, next) => {
   const { username, password } = req.body
   if (!username || !password) {
-    return res
-      .status(400)
-      .send({ Error: "Username and password must be provided" })
+    next("Username and password must be provided")
   }
   const user = getUserByProperty("username", username)
   if (!user) {
-    return res.status(404).send({ Error: "No user found with that username" })
+    next("No user found with that username")
   }
   try {
     const match = await bcrypt.compare(password, user.password)
     if (!match) {
-      return res.status(401).send({ Error: "Password provided is incorrect" })
+      next("Password provided is incorrect")
     }
     const token = newToken(user)
     res.status(200).send({ token })
   } catch (e) {
-    console.log(`<<<<<<<<<<<<< Error: ${e}`)
-    res.status(400).send({ Error: "Error authenticating user" })
+    next("Error authenticating user")
   }
 }
 
