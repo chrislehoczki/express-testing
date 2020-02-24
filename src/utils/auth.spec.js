@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import config from "../config"
-import { newToken, verifyToken, signup, signin } from "./auth"
+import { newToken, verifyToken, signup, signin, protect } from "./auth"
 import {
   getUsers,
   loadUsers,
@@ -139,6 +139,66 @@ describe.only("auth", () => {
       }
 
       await signin(req, res)
+    })
+  })
+  describe("protect", () => {
+    it("returns 401 if no bearer token supplied", async () => {
+      const req = { headers: {} }
+      const res = {
+        status(status) {
+          expect(status).toBe(401)
+          return this
+        },
+        end() {}
+      }
+
+      await protect(req, res)
+    })
+
+    it("token must have correct prefix", async () => {
+      expect.assertions(2)
+
+      let req = { headers: { authorization: newToken({ id: "123sfkj" }) } }
+      let res = {
+        status(status) {
+          expect(status).toBe(401)
+          return this
+        },
+        end() {
+          expect(true).toBe(true)
+        }
+      }
+
+      await protect(req, res)
+    })
+
+    it("must be a real user", async () => {
+      const token = `Bearer ${newToken({ id: "testId" })}`
+      const req = { headers: { authorization: token } }
+
+      const res = {
+        status(status) {
+          expect(status).toBe(401)
+          return this
+        },
+        end() {
+          expect(true).toBe(true)
+        }
+      }
+
+      await protect(req, res)
+    })
+
+    it("finds user form token and passes on", async () => {
+      const user = addUser({ username: "ishmail" })
+      const token = `Bearer ${newToken({ id: user.id })}`
+      const req = { headers: { authorization: token } }
+
+      const next = jest.fn()
+      await protect(req, {}, next)
+      expect(req.user.id).toBe(user.id)
+      expect(req.user.password).toBe(null)
+      expect(next).toHaveBeenCalled()
     })
   })
   afterEach(() => {

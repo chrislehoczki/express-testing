@@ -69,3 +69,19 @@ export const signin = async (req, res) => {
     res.status(400).send({ Error: "Error authenticating user" })
   }
 }
+
+export const protect = async (req, res, next) => {
+  if (!req.headers.authorization) {
+    return res.status(401).end()
+  }
+  if (req.headers.authorization.slice(0, 6) !== "Bearer") {
+    return res.status(401).end()
+  }
+  const token = req.headers.authorization.replace("Bearer ", "")
+  const user = await verifyToken(token)
+  if (!user) {
+    return res.status(401).end()
+  }
+  req.user = { ...user, password: null }
+  next()
+}
