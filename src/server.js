@@ -5,7 +5,7 @@ import morgan from "morgan"
 import config from "./config"
 
 import userRouter from "./resources/user/user.router"
-
+import authRouter from "./utils/auth.router"
 import errorMiddleware from "./utils/errorMiddleware"
 
 export const app = express()
@@ -15,6 +15,7 @@ app.use(urlencoded({ extended: true }))
 app.use(morgan("dev"))
 
 app.use("/user", userRouter)
+app.use("/auth", authRouter)
 
 app.use(errorMiddleware)
 

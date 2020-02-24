@@ -27,7 +27,7 @@ export const verifyToken = token => {
 export const signup = async (req, res, next) => {
   const { username, password } = req.body
   if (!username || !password) {
-    next("Username and password must be provided")
+    return next("Username and password must be provided")
   }
   try {
     const hash = await bcrypt.hash(password, 8)
@@ -46,16 +46,16 @@ export const signup = async (req, res, next) => {
 export const signin = async (req, res, next) => {
   const { username, password } = req.body
   if (!username || !password) {
-    next("Username and password must be provided")
+    return next("Username and password must be provided")
   }
   const user = getUserByProperty("username", username)
   if (!user) {
-    next("No user found with that username")
+    return next("No user found with that username")
   }
   try {
     const match = await bcrypt.compare(password, user.password)
     if (!match) {
-      next("Password provided is incorrect")
+      return next("Password provided is incorrect")
     }
     const token = newToken(user)
     res.status(200).send({ token })
