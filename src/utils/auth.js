@@ -2,7 +2,11 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
 import config from "../config"
-import { addUser, getUserById } from "../resources/user/user.controller"
+import {
+  addUser,
+  getUserById,
+  getUserByProperty
+} from "../resources/user/user.controller"
 
 export const newToken = (user, expiresIn = config.secrets.jwtExp) => {
   return jwt.sign({ id: user.id }, config.secrets.jwt, {
@@ -38,6 +42,30 @@ export const signup = async (req, res) => {
     res.status(201).send({ token })
   } catch (e) {
     console.log(`<<<<<<<<<<<<< Error: ${e}`)
-    res.status(400).send({ error: "Error creating user" })
+    res.status(400).send({ Error: "Error creating user" })
+  }
+}
+
+export const signin = async (req, res) => {
+  const { username, password } = req.body
+  if (!username || !password) {
+    return res
+      .status(400)
+      .send({ Error: "Username and password must be provided" })
+  }
+  const user = getUserByProperty("username", username)
+  if (!user) {
+    return res.status(404).send({ Error: "No user found with that username" })
+  }
+  try {
+    const match = await bcrypt.compare(password, user.password)
+    if (!match) {
+      return res.status(401).send({ Error: "Password provided is incorrect" })
+    }
+    const token = newToken(user)
+    res.status(200).send({ token })
+  } catch (e) {
+    console.log(`<<<<<<<<<<<<< Error: ${e}`)
+    res.status(400).send({ Error: "Error authenticating user" })
   }
 }

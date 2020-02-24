@@ -4,6 +4,10 @@ let users = []
 
 const getUserIndex = id => users.findIndex(user => user.id === id)
 export const getUserById = id => users.find(user => user.id === id)
+export const getUserByProperty = (prop, val) => {
+  return users.find(user => user[prop] === val)
+}
+
 export const resetUsers = () => (users = [])
 
 export const loadUsers = userArray => {
