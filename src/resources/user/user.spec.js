@@ -3,12 +3,9 @@ import { getUsers, addUser, loadUsers, resetUsers } from "./user.controller"
 
 const request = require("supertest")
 
-const mockUsers = [
-  { id: 0, name: "Chris" },
-  { id: 1, name: "John" }
-]
-const newUser = { id: 2, name: "Judit" }
-const updateUser = { id: 1, name: "Paul" }
+const mockUsers = [{ username: "Chris" }, { username: "John" }]
+const newUser = { username: "Judit" }
+const updateUser = { username: "Paul" }
 
 describe("userController", () => {
   beforeEach(() => {
@@ -37,7 +34,6 @@ describe("userRouter", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .end(function(err, res) {
-        console.log(res.body)
         if (err) throw err
         expect(res.body).toHaveLength(2)
         done()
@@ -54,7 +50,7 @@ describe("userRouter", () => {
         if (err) throw err
         expect(res.body).toEqual({ status: "OK" })
         expect(getUsers()).toHaveLength(3)
-        expect(getUsers()[2].name).toEqual("Judit")
+        expect(getUsers()[2].username).toEqual("Judit")
         done()
       })
   })
@@ -62,14 +58,14 @@ describe("userRouter", () => {
   it("PUT /user updates a user in the database", done => {
     request(app)
       .put("/user")
-      .send(updateUser)
+      .send({ ...updateUser, id: getUsers()[1].id })
       .expect("Content-Type", /json/)
       .expect(200)
       .end(function(err, res) {
         if (err) throw err
         expect(res.body).toEqual({ status: "OK" })
         expect(getUsers()).toHaveLength(2)
-        expect(getUsers()[1].name).toEqual("Paul")
+        expect(getUsers()[1].username).toEqual("Paul")
         done()
       })
   })
@@ -77,14 +73,14 @@ describe("userRouter", () => {
   it("DELETE /user deletes a user from the database", done => {
     request(app)
       .delete("/user")
-      .send({ id: 0 })
+      .send({ id: getUsers()[0].id })
       .expect("Content-Type", /json/)
       .expect(200)
       .end(function(err, res) {
         if (err) throw err
         expect(res.body).toEqual({ status: "OK" })
         expect(getUsers()).toHaveLength(1)
-        expect(getUsers()[0].name).toEqual("John")
+        expect(getUsers()[0].username).toEqual("John")
         done()
       })
   })
